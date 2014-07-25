@@ -4,6 +4,7 @@ using System.Linq;
 
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
+using System.Diagnostics;
 
 namespace WalkOff
 {
@@ -41,10 +42,15 @@ namespace WalkOff
         public override void DidEnterBackground (UIApplication application)
         {
         }
-        
+         
         // This method is called as part of the transiton from background to active state.
-        public override void WillEnterForeground (UIApplication application)
+        public override async void WillEnterForeground (UIApplication application)
         {
+            var controller = Window.RootViewController.ChildViewControllers[0] as MainViewController;
+            var steps = await controller.RefreshSteps();
+            // do domething with steps...
+            Debugger.Log(0, "Results", steps.ToString());
+            controller.StepCount = steps;
         }
         
         // This method is called when the application is about to terminate. Save data, if needed.

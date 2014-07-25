@@ -5,6 +5,7 @@ using MonoTouch.CoreMotion;
 using System.Threading;
 using MonoTouch.CoreFoundation;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace WalkOff
 {
@@ -13,11 +14,11 @@ namespace WalkOff
         CMStepCounter _counter;
         CMMotionActivityManager _manager;
 
-//        Boolean _currentlyWalkingOrRunning;
-
         bool _running;
         int _steps = 0;
         int _oldsteps = 0;
+
+        NSDate _lastUpdate;
 
         readonly UIImage _none;
         readonly UIImage _low;
@@ -53,6 +54,7 @@ namespace WalkOff
             _counter.StartStepCountingUpdates (queue, 1, (steps, time, err) =>  {
                 Debugger.Log((int)SourceLevels.ActivityTracing, "Step Count Update", steps + Environment.NewLine);
                 BeginInvokeOnMainThread (() =>  {
+                    _lastUpdate = time;
                     _steps = _oldsteps + steps;
                     _label.Text = _steps.ToString ();
                     Debugger.Log((int)SourceLevels.ActivityTracing, "old steps / new steps / total steps", string.Format("{0} / {1} / {2}", _oldsteps, steps, _steps) + Environment.NewLine);
@@ -65,6 +67,22 @@ namespace WalkOff
             _counter.StopStepCountingUpdates ();
         }
 
+        public async Task<int> RefreshSteps ()
+        {
+            if (!_running)
+                return 0;
+            var now = NSDate.Now;
+            var steps = await _counter.QueryStepCountAsync(_lastUpdate, now, NSOperationQueue.CurrentQueue);
+            BeginInvokeOnMainThread(()=>
+            {
+                _lastUpdate = now;
+                _steps = _oldsteps + steps;
+                _label.Text = _steps.ToString ();
+                Debugger.Log((int)SourceLevels.ActivityTracing, "old steps / new steps / total steps", string.Format("{0} / {1} / {2}", _oldsteps, steps, _steps) + Environment.NewLine);
+            });
+            return 0;
+        }
+
         partial void UIButton4_TouchUpInside (UIButton sender)
         {
             if (!_running)
@@ -72,7 +90,7 @@ namespace WalkOff
                 var queue = new NSOperationQueue();
                 _manager.StartActivityUpdates(queue, (activity)=>
                 {
-                        Debugger.Log((int)SourceLevels.ActivityTracing, "ActivityUpdate", activity + Environment.NewLine);
+                    Debugger.Log((int)SourceLevels.ActivityTracing, "ActivityUpdate", activity + Environment.NewLine);
                     string activityText;
                     UIImage confidence = null;
                     var shouldUpdate = false;
@@ -109,7 +127,6 @@ namespace WalkOff
                     BeginInvokeOnMainThread (() => 
                     {
                         Debugger.Log((int)SourceLevels.ActivityTracing, "Setting Activity Text", activityText + Environment.NewLine);
-//                        _currentlyWalkingOrRunning = shouldUpdate;
                         _activity.Text = activityText;
                         _confidence.Image = confidence;
                     });
