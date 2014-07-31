@@ -57,6 +57,11 @@
 		<string>location</string>
 		<string>fetch</string>
 		<string>remote-notification</string>
+		<string>external-accessory</string>
+	</array>
+	<key>CFBundleIconFiles</key>
+	<array>
+		<string>logo_120x120</string>
 	</array>
 </dict>
 </plist>

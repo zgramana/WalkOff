@@ -108,6 +108,8 @@
     <BundleResource Include="Resources\confidence-low.png" />
     <BundleResource Include="Resources\confidence-medium.png" />
     <BundleResource Include="Resources\confidence-none.png" />
+    <BundleResource Include="Resources\logo.png" />
+    <BundleResource Include="Resources\logo_120x120.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />

@@ -44,14 +44,14 @@ namespace WalkOff
         }
          
         // This method is called as part of the transiton from background to active state.
-        public override async void WillEnterForeground (UIApplication application)
-        {
-            var controller = Window.RootViewController.ChildViewControllers[0] as MainViewController;
-            var steps = await controller.RefreshSteps();
-            // do domething with steps...
-            Debugger.Log(0, "Results", steps.ToString());
-            controller.StepCount = steps;
-        }
+//        public override async void WillEnterForeground (UIApplication application)
+//        {
+//            var controller = Window.RootViewController.ChildViewControllers[0] as MainViewController;
+//            var steps = await controller.RefreshSteps();
+//            // do domething with steps...
+//            Debugger.Log(0, "Results", steps.ToString());
+//            controller.StepCount = steps;
+//        }
         
         // This method is called when the application is about to terminate. Save data, if needed.
         public override void WillTerminate (UIApplication application)
